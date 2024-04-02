@@ -1,190 +1,118 @@
-import numpy as np
-import pickle
 import streamlit as st
-from PIL import Image
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 
-#loading the saved model
-loaded_model=pickle.load(open('trained_model.sav','rb'))
+# Load the heart disease dataset
+df = pd.read_csv('import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 
-#creating a function for Prediction
+# Load the heart disease dataset
+df = pd.read_csv('heart.csv')
 
-def heart_diseases_prediction(input_data):
-    
-    # change the input data to a numpy array
-    input_data_as_numpy_array= np.asarray(input_data, dtype=float)
-    
-    # reshape the numpy array as we are predicting for only one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-    
-    prediction = loaded_model.predict(input_data_reshaped)
-        
-    if (prediction[0]==[0]):
-        return('The Person does not have a Heart Disease')
-    else:
-        return('The Person has Heart Disease')
+# Sidebar
+st.sidebar.header('User Input Parameters')
 
-        
-def main():
+def user_input_features():
+    age = st.sidebar.slider('Age', 29, 77, 55)
+    sex = st.sidebar.selectbox('Sex', ('male', 'female'))
+    cp = st.sidebar.slider('Chest Pain Type (cp)', 0, 3, 1)
+    trestbps = st.sidebar.slider('Resting Blood Pressure (trestbps)', 94, 200, 125)
+    chol = st.sidebar.slider('Serum Cholesterol (chol)', 126, 564, 250)
+    fbs = st.sidebar.selectbox('Fasting Blood Sugar > 120 mg/dl (fbs)', (0, 1))
+    restecg = st.sidebar.slider('Resting Electrocardiographic Results (restecg)', 0, 2, 0)
+    thalach = st.sidebar.slider('Maximum Heart Rate Achieved (thalach)', 71, 202, 150)
+    exang = st.sidebar.selectbox('Exercise Induced Angina (exang)', (0, 1))
+    oldpeak = st.sidebar.slider('ST Depression Induced by Exercise Relative to Rest (oldpeak)', 0.0, 6.2, 3.0)
+    slope = st.sidebar.slider('Slope of the Peak Exercise ST Segment (slope)', 0, 2, 1)
+    ca = st.sidebar.slider('Number of Major Vessels Colored by Fluoroscopy (ca)', 0, 4, 2)
+    thal = st.sidebar.slider('Thalassemia (thal)', 0, 3, 2)
+    
+    data = {'age': age,
+            'sex': sex,
+            'cp': cp,
+            'trestbps': trestbps,
+            'chol': chol,
+            'fbs': fbs,
+            'restecg': restecg,
+            'thalach': thalach,
+            'exang': exang,
+            'oldpeak': oldpeak,
+            'slope': slope,
+            'ca': ca,
+            'thal': thal}
+    
+    features = pd.DataFrame(data, index=[0])
+    return features
 
-    st.set_page_config(page_title="Heart Disease Web App", page_icon=":heart:", layout="wide")
-    col1, col2 = st.columns([2, 1])  
-    with col1:
-        st.header('Welcome to the Heart Disease Web App')
-        st.subheader('Enter the details below to check if you have heart disease')
-    image = Image.open("heart.png")
-    with col2:
-        st.image(image, width=100,output_format="auto",)
-    
-    #st.header('Welcome to the Heart Disease Web App')
-    
-    #st.write("""****""")
+input_df = user_input_features()
 
+st.subheader('User Input parameters')
+st.write(input_df)
 
+# Load the saved RandomForestClassifier model
+load_clf = pickle.load(open('heart_clf.pkl', 'rb'))
 
-    #st.markdown('<style>body{background-color: #f5f5f5; font-family: Arial, sans-serif;}</style>', unsafe_allow_html=True)
+# Apply the model to make predictions
+prediction = load_clf.predict(input_df)
+prediction_proba = load_clf.predict_proba(input_df)
 
+st.subheader('Prediction')
+st.write(prediction)
 
-    
-    #getting the input data from the user
-    age = st.text_input('Enter Age')
-    # Validate age input
-    if age:
-        if not age.isdigit():
-            st.error('Age must be a valid number.')
-        else:
-            age = int(age)
-            if age < 5 or age > 100:
-                st.error('Age must be between 5 and 100.')
+st.subheader('Prediction Probability')
+st.write(prediction_proba)
+')
 
+# Sidebar
+st.sidebar.header('User Input Parameters')
 
-    sex = st.selectbox('Select Sex', ['Male', 'Female'])
-    cp = st.selectbox('Select Chest Pain Type', ['Typical angina', 'Atypical angina', 'Non-anginal pain', 'Asymptomatic'])
+def user_input_features():
+    age = st.sidebar.slider('Age', 29, 77, 55)
+    sex = st.sidebar.selectbox('Sex', ('male', 'female'))
+    cp = st.sidebar.slider('Chest Pain Type (cp)', 0, 3, 1)
+    trestbps = st.sidebar.slider('Resting Blood Pressure (trestbps)', 94, 200, 125)
+    chol = st.sidebar.slider('Serum Cholesterol (chol)', 126, 564, 250)
+    fbs = st.sidebar.selectbox('Fasting Blood Sugar > 120 mg/dl (fbs)', (0, 1))
+    restecg = st.sidebar.slider('Resting Electrocardiographic Results (restecg)', 0, 2, 0)
+    thalach = st.sidebar.slider('Maximum Heart Rate Achieved (thalach)', 71, 202, 150)
+    exang = st.sidebar.selectbox('Exercise Induced Angina (exang)', (0, 1))
+    oldpeak = st.sidebar.slider('ST Depression Induced by Exercise Relative to Rest (oldpeak)', 0.0, 6.2, 3.0)
+    slope = st.sidebar.slider('Slope of the Peak Exercise ST Segment (slope)', 0, 2, 1)
+    ca = st.sidebar.slider('Number of Major Vessels Colored by Fluoroscopy (ca)', 0, 4, 2)
+    thal = st.sidebar.slider('Thalassemia (thal)', 0, 3, 2)
     
+    data = {'age': age,
+            'sex': sex,
+            'cp': cp,
+            'trestbps': trestbps,
+            'chol': chol,
+            'fbs': fbs,
+            'restecg': restecg,
+            'thalach': thalach,
+            'exang': exang,
+            'oldpeak': oldpeak,
+            'slope': slope,
+            'ca': ca,
+            'thal': thal}
     
-    trestbps = st.text_input('Enter Resting Blood Pressure')
-    # Validate resting blood pressure input
-    if trestbps:
-        if not trestbps.isdigit():
-            st.error('Resting blood pressure must be a valid number.')
-        else:
-            trestbps = int(trestbps)
-            if trestbps < 60 or trestbps > 300:
-                st.error('Resting blood pressure must be between 60 and 300 mmHg.')
-    
-     
-    chol = st.text_input('Enter Cholesterol Level')
-    # Validate cholesterol level input
-    if chol:
-        if not chol.isdigit():
-            st.error('Cholesterol level must be a valid number.')
-        else:
-            chol = int(chol)
-            if chol < 50 or chol > 500:
-                st.error('Cholesterol level must be between 50 and 500.')
-    
-  
-    fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dl', ['Yes', 'No'])
-    restecg = st.selectbox('Select Resting Electrocardiographic Results', ['Normal', 'Having ST-T wave abnormality', 'Showing probable or definite left ventricular hypertrophy'])
-    
-    
-    thalach = st.text_input('Enter Maximum Heart Rate Achieved')
-    # Validate maximum heart rate achieved input
-    if thalach:
-        if not thalach.isdigit():
-            st.error('Maximum heart rate achieved must be a valid number.')
-        else:
-            thalach = int(thalach)
-            if thalach < 0 or thalach > 300:
-                st.error('Maximum heart rate achieved must be between 0 and 300.')
-    
-        
-    exang = st.selectbox('Exercise Induced Angina', ['Yes', 'No'])
-     
-    oldpeak = st.text_input('Enter ST Depression')
-    # Validate ST depression input
-    if oldpeak:
-        try:
-            oldpeak = float(oldpeak)
-            if oldpeak < 0 or oldpeak > 10:
-                st.error('ST Depression must be between 0 and 10.')
-        except ValueError:
-            st.error('ST Depression must be a valid number.')
-    
-    
-    slope = st.selectbox('Select the slope of the peak exercise ST segment', ['Upsloping', 'Flat', 'Downsloping'])
-    
-   
-    ca = st.text_input('Enter the number of major vessels colored by fluoroscopy')
-    # Validate the number of major vessels input
-    if ca:
-        if not ca.isdigit():
-            st.error('Number of major vessels must be a valid integer.')
-        else:
-            ca = int(ca)
-            if ca < 0 or ca > 4:
-                st.error('Number of major vessels must be between 0 and 4.')
-      
-    thal = st.selectbox('Thalassemia', ['Normal', 'Fixed defect', 'Reversable defect'])
+    features = pd.DataFrame(data, index=[0])
+    return features
 
-    # Preprocess the user input
-    sex = 1 if sex == 'Male' else 0
-    if cp == 'Typical Angina':
-        cp = 0
-    elif cp == 'Atypical Angina':
-        cp = 1
-    elif cp == 'Non-anginal Pain':
-        cp = 2
-    else:
-        cp = 3
-    fbs = 1 if fbs == 'Yes' else 0
-    if restecg == 'Normal':
-        restecg = 0
-    elif restecg == 'ST-T Wave Abnormality':
-        restecg = 1
-    else:
-        restecg = 2
-    exang = 1 if exang == 'Yes' else 0
-    if slope == 'Upsloping':
-        slope = 0
-    elif slope == 'Flat':
-        slope = 1
-    else:
-        slope = 2
-   
-    if thal == 'Normal':
-        thal = 1
-    elif thal == 'Fixed Defect':
-        thal = 2
-    else:
-        thal = 3
+input_df = user_input_features()
 
-    
-    #code for Prediction
-    
-    diagnosis = ''
-    
-    #creating a button for Prediction
-    
-    if st.button('Heart Test Result'):
-        data = np.array([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
-        diagnosis = heart_diseases_prediction(data)
-    
-    st.write('')
+st.subheader('User Input parameters')
+st.write(input_df)
 
-    
-    # display the output
-    if diagnosis:
-        st.success(diagnosis)
-        if 'not' in diagnosis:
-            st.spinner('Computing..')
-            st.balloons()
-       
-        
-    st.markdown('<hr>', unsafe_allow_html=True)
-    st.write('Version 1.3 | Last updated: May 2023 | Created by - Group 28')
-    #st.write('[View source code]()')
-    st.markdown('[View source code](https://github.com/hrixmi/Heart-Disease-Prediction.git)', unsafe_allow_html=True)
+# Load the saved RandomForestClassifier model
+load_clf = pickle.load(open('heart_clf.pkl', 'rb'))
 
-    
-if __name__ == '__main__':
-    main()
+# Apply the model to make predictions
+prediction = load_clf.predict(input_df)
+prediction_proba = load_clf.predict_proba(input_df)
+
+st.subheader('Prediction')
+st.write(prediction)
+
+st.subheader('Prediction Probability')
+st.write(prediction_proba)
